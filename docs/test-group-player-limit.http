@@ -1,0 +1,179 @@
+@BASE_URL = http://localhost:3000
+@USER_TOKEN = 725b7c84-31c0-4ba1-ac33-8b7690e9b681
+@GROUP_ID = 1
+//
+### 1. Criar Utilizador
+POST {{BASE_URL}}/api/users 
+Content-Type: application/json
+
+{
+    "username": "arsenal-user-test"
+}
+
+### 2. Criar Grupo (PL 2025) - Para testar limite de 11 jogadores
+POST {{BASE_URL}}/api/groups 
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+    "name": "Arsenal Squad 2025",
+    "description": "Test group to verify 11 player limit",
+    "competition": "PL",
+    "year": 2025
+}
+
+### 3. Adicionar Jogador 1 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 3189,
+    "playerName": "Kepa Arrizabalaga",
+    "position": "Goalkeeper",
+    "nationality": "Spain"
+}
+
+### 3. Adicionar Jogador 2 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 4832,
+    "playerName": "David Raya",
+    "position": "Goalkeeper",
+    "nationality": "Spain"
+}
+
+### 4. Adicionar Jogador 3 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 171455,
+    "playerName": "Tommy Setford",
+    "position": "Goalkeeper",
+    "nationality": "England"
+}
+
+### 5. Adicionar Jogador 4 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 270668,
+    "playerName": "Aleksei Fedorushchenko",
+    "position": "Goalkeeper",
+    "nationality": "Russia"
+}
+
+### 6. Adicionar Jogador 5 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 285128,
+    "playerName": "Max Dowman",
+    "position": "Midfield",
+    "nationality": "England"
+}
+
+### 7. Adicionar Jogador 6 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 244120,
+    "playerName": "Myles Lewis-Skelly",
+    "position": "Left-Back",
+    "nationality": "England"
+}
+
+### 8. Adicionar Jogador 7 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 188476,
+    "playerName": "Ethan Nwaneri",
+    "position": "Attacking Midfield",
+    "nationality": "England"
+}
+
+### 9. Adicionar Jogador 8 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 172839,
+    "playerName": "Cristhian Mosquera",
+    "position": "Centre-Back",
+    "nationality": "Spain"
+}
+
+### 10. Adicionar Jogador 9 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 167720,
+    "playerName": "Noni Madueke",
+    "position": "Right Winger",
+    "nationality": "England"
+}
+
+### 11. Adicionar Jogador 10 de 11
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 133512,
+    "playerName": "Riccardo Calafiori",
+    "position": "Left-Back",
+    "nationality": "Italy"
+}
+
+### 12. Adicionar Jogador 11 de 11 (ÚLTIMO - Completa o grupo)
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 125674,
+    "playerName": "Piero Hincapié",
+    "position": "Centre-Back",
+    "nationality": "Ecuador"
+}
+
+### 13. Tentar Adicionar Jogador 12 (DEVE RETORNAR 409 - GROUP_FULL)
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+{
+    "playerId": 115035,
+    "playerName": "Martín Zubimendi",
+    "position": "Defensive Midfield",
+    "nationality": "Spain"
+}

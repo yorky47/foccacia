@@ -1,0 +1,80 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <h2 class="mb-4">
+                <i class="bi bi-plus-circle"></i> Create New Group
+            </h2>
+
+            {{#if error}}
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{error}}
+                </div>
+            {{/if}}
+
+            <form method="POST" action="/site/groups/new">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Group Name *</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="name" 
+                        name="name" 
+                        required 
+                        minlength="3"
+                        value="{{formData.name}}"
+                        placeholder="e.g., My Dream Team"
+                    >
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea 
+                        class="form-control" 
+                        id="description" 
+                        name="description" 
+                        rows="3"
+                        placeholder="Optional description for your squad"
+                    >{{formData.description}}</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="competition" class="form-label">Competition *</label>
+                        <select class="form-select" id="competition" name="competition" required>
+                            <option value="">Select a competition...</option>
+                            <option value="PL" {{#if (eq formData.competition "PL")}}selected{{/if}}>Premier League</option>
+                            <option value="PD" {{#if (eq formData.competition "PD")}}selected{{/if}}>La Liga</option>
+                            <option value="SA" {{#if (eq formData.competition "SA")}}selected{{/if}}>Serie A</option>
+                            <option value="BL1" {{#if (eq formData.competition "BL1")}}selected{{/if}}>Bundesliga</option>
+                            <option value="FL1" {{#if (eq formData.competition "FL1")}}selected{{/if}}>Ligue 1</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="year" class="form-label">Season Year *</label>
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="year" 
+                            name="year" 
+                            required 
+                            min="2020" 
+                            max="2030"
+                            value="{{formData.year}}"
+                            placeholder="2025"
+                        >
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/site/groups?token={{token}}&user={{user}}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Create Group
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

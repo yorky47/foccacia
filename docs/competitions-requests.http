@@ -1,0 +1,10 @@
+@BASE_URL = http://localhost:3000
+@SEASON = 2025
+
+### Listar Competições
+GET {{BASE_URL}}/api/competitions
+X-Auth-Token: {{KEY}}
+
+### Equipas + Jogadores de uma Competição (season obrigatório)
+GET {{BASE_URL}}/api/competitions/PL/teams?season={{SEASON}}
+X-Auth-Token: {{KEY}}

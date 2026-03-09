@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/site">
+            <i class="bi bi-trophy-fill text-warning"></i>
+            FOCCACIA
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/site">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/site/groups">My Groups</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/site/groups/new">
+                        <i class="bi bi-plus-circle"></i> New Group
+                    </a>
+                </li>
+                </ul>
+                
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {{#if user}}
+                    <li class="nav-item me-3">
+                        <span class="navbar-text">
+                            <i class="bi bi-person-circle"></i> Hello, <strong>{{user.username}}</strong>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/site/logout" method="POST" style="margin: 0;">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                        </form>
+                    </li>
+                    {{else}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/site/login">Login</a>
+                    </li>
+                    {{/if}}
+            </ul>
+        </div>
+    </div>
+</nav>

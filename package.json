@@ -1,0 +1,36 @@
+{
+  "name": "foccacia-api",
+  "version": "1.0.0",
+  "description": "FOCCACIA - Football Complete Clubs API and Chelas Internet Application",
+  "homepage": "https://github.com/isel-leic-ipw/isel-leic-ipw-pi-2526i-foccacia-leic2526i-ipw33d-g01#readme",
+  "bugs": {
+    "url": "https://github.com/isel-leic-ipw/isel-leic-ipw-pi-2526i-foccacia-leic2526i-ipw33d-g01/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isel-leic-ipw/isel-leic-ipw-pi-2526i-foccacia-leic2526i-ipw33d-g01.git"
+  },
+  "license": "ISC",
+  "author": "Yorky, Victor, Martim",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file=.env foccacia-server.mjs",
+    "populate": "node --env-file=.env scripts/populate-elastic.mjs",
+    "test": "mocha test/*.mjs"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "hbs": "^4.2.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^11.7.4"
+  }
+}

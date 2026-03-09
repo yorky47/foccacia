@@ -1,0 +1,9 @@
+@BASE_URL = http://localhost:3000
+
+### Criar Utilizador
+POST {{BASE_URL}}/api/users
+Content-Type: application/json
+
+{
+  "username": "user2"
+}

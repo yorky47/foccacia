@@ -1,0 +1,557 @@
+openapi: 3.0.0
+info:
+  title: FOCCACIA API - Parte 1
+  version: 1.0.0
+  description: |
+    API REST para gestão de grupos "Best XI" e acesso às competições/equipas da Football Data API.
+    Parte 1 do trabalho prático. Inclui documentação dos endpoints obrigatórios.
+
+    Execução (dev):
+      - Instalar deps: `npm install`
+      - Iniciar servidor: `npm start`
+
+    Football Data API key:
+      - Definir `KEY=<api_key>` no ficheiro `.env` (fallback: `FOOTBALL_API_KEY=<api_key>`)
+      - Para desenvolver sem key, usar modo mock em `foccacia-server.mjs` (`USE_MOCK_DATA = true`)
+  contact:
+    name: Grupo FOCCACIA
+  license:
+    name: ISC
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desenvolvimento
+
+tags:
+  - name: Competitions
+    description: Consultas a competições e equipas
+  - name: Users
+    description: Gestão de utilizadores (criação de token)
+  - name: Groups
+    description: Gestão de grupos Best XI
+  - name: Players
+    description: Gestão de jogadores dentro de grupos
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    Competition:
+      type: object
+      required: [ code, name ]
+      properties:
+        code:
+          type: string
+          example: PL
+        name:
+          type: string
+          example: Premier League
+        area:
+          type: string
+          example: England
+        year:
+          type: integer
+          nullable: true
+          example: 2024
+
+    ExternalPlayer:
+      type: object
+      description: Player DTO returned by the Football-Data API adapter (used in /api/competitions/*).
+      properties:
+        playerId:
+          type: integer
+          example: 4832
+        playerName:
+          type: string
+          example: David Raya
+        position:
+          type: string
+          example: Goalkeeper
+        nationality:
+          type: string
+          example: ES
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1995-09-15"
+
+    Team:
+      type: object
+      description: Team DTO returned by the Football-Data API adapter.
+      properties:
+        teamId:
+          type: integer
+          example: 65
+        name:
+          type: string
+          example: Manchester City
+        code:
+          type: string
+          nullable: true
+          example: MCI
+        country:
+          type: string
+          example: England
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExternalPlayer'
+
+    GroupPlayer:
+      type: object
+      description: Player representation stored inside a group (mapped from external data).
+      properties:
+        id:
+          type: integer
+          example: 4832
+        name:
+          type: string
+          example: David Raya
+        position:
+          type: string
+          example: Goalkeeper
+        nationality:
+          type: string
+          example: ES
+        age:
+          type: integer
+          nullable: true
+          example: 28
+        teamId:
+          type: integer
+          example: 65
+        teamCode:
+          type: string
+          nullable: true
+          example: MCI
+        teamName:
+          type: string
+          example: Manchester City
+
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: tutor_ipw
+        token:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+
+    GroupCreation:
+      type: object
+      required: [ name, competition, year ]
+      properties:
+        name:
+          type: string
+          example: Melhores de 2025
+        description:
+          type: string
+          example: Meu Best XI da época
+        competition:
+          type: string
+          example: PL
+        year:
+          type: integer
+          example: 2025
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "3lq1QpQBx8m0w5mR8QvA"
+        name:
+          type: string
+        description:
+          type: string
+        competition:
+          type: string
+          example: PL
+        year:
+          type: integer
+          example: 2025
+        userToken:
+          type: string
+          description: Logical owner token stored with the group (present in current implementation).
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupPlayer'
+
+    Ok:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+
+    ErrorEnvelope:
+      oneOf:
+        - type: object
+          properties:
+            code:
+              type: integer
+              example: 6
+            error:
+              type: string
+              example: Missing Token
+          required: [ code, error ]
+        - type: object
+          properties:
+            error:
+              type: string
+              example: Access denied. No token provided.
+          required: [ error ]
+
+    Error:
+      $ref: '#/components/schemas/ErrorEnvelope'
+
+    AddPlayerInput:
+      type: object
+      required:
+        - playerId
+      properties:
+        playerId:
+          type: integer
+          example: 4832
+          description: The unique identifier of the player to add
+        playerName:
+          type: string
+          example: "David Raya"
+          description: Optional. Ignored by current implementation.
+        position:
+          type: string
+          example: "Goalkeeper"
+          description: Optional. Ignored by current implementation.
+        nationality:
+          type: string
+          example: "Spain"
+          description: Optional. Ignored by current implementation.
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1995-09-15"
+          description: Optional. Ignored by current implementation.
+
+  responses:
+    BadRequest:
+      description: Bad Request. The request was invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Unauthorized:
+      description: Unauthorized. The user is not authenticated.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Forbidden:
+      description: Forbidden. The user is not authorized to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Not Found. The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Conflict:
+      description: Conflict. The request could not be completed due to a conflict with the current state of the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+
+paths:
+  /api/competitions:
+    get:
+      tags: [ Competitions ]
+      summary: Lista todas as competições disponíveis
+      operationId: getAllCompetitions
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          description: Chave da Football API
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de competições
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Competition'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/competitions/{code}/teams:
+    get:
+      tags: [ Competitions ]
+      summary: Obtém equipas e jogadores de uma competição num dado ano
+      operationId: getTeamsAndPlayers
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: Código da competição
+          schema:
+            type: string
+        - name: season
+          in: query
+          required: true
+          description: Ano da época (YYYY)
+          schema:
+            type: integer
+        - name: X-Auth-Token
+          in: header
+          required: true
+          description: Chave da Football API
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Equipas e jogadores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  competition:
+                    $ref: '#/components/schemas/Competition'
+                  teams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/users:
+    post:
+      tags: [ Users ]
+      summary: Cria um novo utilizador e devolve token (UUID)
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ username, password ]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Utilizador criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/groups:
+    get:
+      tags: [ Groups ]
+      summary: Lista todos os grupos do utilizador autenticado
+      operationId: getAllGroups
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de grupos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [ Groups ]
+      summary: Cria um novo grupo Best XI
+      operationId: createGroup
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupCreation'
+      responses:
+        '200':
+          description: Grupo criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/groups/{groupId}:
+    parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: ID do grupo (ElasticSearch document id)
+        schema:
+          type: string
+    get:
+      tags: [ Groups ]
+      summary: Detalhes de um grupo
+      operationId: getGroupById
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Detalhes do grupo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      tags: [ Groups ]
+      summary: Atualiza nome/descrição do grupo
+      operationId: updateGroup
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Grupo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Deletes a group.
+      operationId: deleteGroup
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          description: The group's ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The group was successfully deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/groups/{groupId}/players:
+    parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: ID do grupo (ElasticSearch document id)
+        schema:
+          type: string
+    post:
+      tags: [ Players ]
+      summary: Adiciona jogador ao grupo (máx. 11)
+      operationId: addPlayerToGroup
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPlayerInput'
+      responses:
+        '200':
+          description: The player was successfully added to the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /api/groups/{groupId}/players/{playerId}:
+    parameters:
+      - name: groupId
+        in: path
+        required: true
+        description: ID do grupo (ElasticSearch document id)
+        schema:
+          type: string
+      - name: playerId
+        in: path
+        required: true
+        description: ID do jogador
+        schema:
+          type: string
+    delete:
+      tags: [ Players ]
+      summary: Remove jogador do grupo
+      operationId: removePlayerFromGroup
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The player was successfully removed from the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'

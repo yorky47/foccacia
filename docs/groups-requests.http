@@ -1,0 +1,54 @@
+@BASE_URL = http://localhost:3000
+@USER_TOKEN = 123e4567-e89b-12d3-a456-426614174000
+@GROUP_ID = 1
+@PLAYER_ID = 10
+
+### Listar Grupos
+GET {{BASE_URL}}/api/groups
+Authorization: Bearer {{USER_TOKEN}}
+
+### Criar Grupo
+POST {{BASE_URL}}/api/groups
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+  "name": "Melhores 2025",
+  "description": "XI principal",
+  "competition": "PL",
+  "year": 2025
+}
+
+### Detalhes do Grupo
+GET {{BASE_URL}}/api/groups/{{GROUP_ID}}
+Authorization: Bearer {{USER_TOKEN}}
+
+### Atualizar Grupo (name/description)
+PUT {{BASE_URL}}/api/groups/{{GROUP_ID}}
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+  "name": "Melhores 2025 - edit",
+  "description": "Atualizado"
+}
+
+### Apagar Grupo
+DELETE {{BASE_URL}}/api/groups/{{GROUP_ID}}
+Authorization: Bearer {{USER_TOKEN}}
+
+### Adicionar Jogador ao Grupo (máx. 11)
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+  "playerId": "{{PLAYER_ID}}",
+  "playerName": "John Doe",
+  "teamCode": "MCI",
+  "teamName": "Manchester City"
+}
+
+### Remover Jogador do Grupo
+DELETE {{BASE_URL}}/api/groups/{{GROUP_ID}}/players/{{PLAYER_ID}}
+Authorization: Bearer {{USER_TOKEN}}

@@ -1,0 +1,82 @@
+@BASE_URL = http://localhost:3000
+
+//@KEY = PUT_YOUR_FOOTBALL_API_KEY_HERE para testar
+@USER_TOKEN = 152d17eb-386d-44d7-a3d5-2c6818cd44ca
+@GROUP_ID = 1
+@PLAYER_ID = 244962
+
+### 1) GET Listar Competições (usa Football API -> X-Auth-Token)
+GET {{BASE_URL}}/api/competitions 
+X-Auth-Token: {{KEY}}
+
+### 2) GET Equipas+Jogadores por competição/ano (season obrigatório)
+GET {{BASE_URL}}/api/competitions/PL/teams?season=2025 
+X-Auth-Token: {{KEY}}
+
+### 3) POST Criar Utilizador (sem auth)
+POST {{BASE_URL}}/api/users 
+Content-Type: application/json
+
+{
+    "username": "user-test-2"
+}
+
+### 4) GET Listar Grupos (auth Bearer)
+GET {{BASE_URL}}/api/groups 
+Authorization: Bearer {{USER_TOKEN}}
+
+### 5) POST Criar Grupo (auth Bearer)
+POST {{BASE_URL}}/api/groups 
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+    "name": "Melhores de 2025",
+    "description": "Meu Best XI da época.",
+    "competition": "PL",
+    "year": 2025
+}
+
+### 6) GET Detalhes de um Grupo (auth Bearer)
+GET {{BASE_URL}}/api/groups/{{GROUP_ID}} 
+Authorization: Bearer {{USER_TOKEN}}
+
+### 7) PUT Editar Grupo (name/description) (auth Bearer)
+PUT {{BASE_URL}}/api/groups/{{GROUP_ID}} 
+Authorization: Bearer {{USER_TOKEN}}
+Content-Type: application/json
+
+{
+    "name": "Melhores de 2025 - edit",
+    "description": "Atualizado"
+}
+
+### 8) DELETE Apagar Grupo (auth Bearer)
+DELETE {{BASE_URL}}/api/groups/{{GROUP_ID}} 
+Authorization: Bearer {{USER_TOKEN}}
+
+### 9) POST Adicionar Jogador ao Grupo (máx. 11) (auth Bearer)
+POST {{BASE_URL}}/api/groups/{{GROUP_ID}}/players 
+Authorization: Bearer {{USER_TOKEN}}
+X-Auth-Token: {{KEY}}
+Content-Type: application/json
+
+
+
+
+
+        {
+          "playerId": 244962,
+          "playerName": "Sam Proctor",
+          "position": "Goalkeeper",
+          "nationality": "England",
+          "dateOfBirth": "2006-12-21"
+        }
+
+
+
+
+
+### 10) DELETE Remover Jogador do Grupo (auth Bearer)
+DELETE {{BASE_URL}}/api/groups/{{GROUP_ID}}/players/{{PLAYER_ID}} 
+Authorization: Bearer {{USER_TOKEN}}
